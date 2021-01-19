@@ -34,12 +34,11 @@ public class GameBoard {
 		this.board[position] = mark;
 	}
 
-
-
 	public boolean isEmpty(int position) {
 		if (this.board[position] == 0) {
 			return true;
 		} else {
+			System.out.println("Lugar já ocupado, escolha outra posição!");
 			return false;
 		}
 	}

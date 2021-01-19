@@ -10,9 +10,9 @@ public class GameCore {
 	int selectedPosition;
 	int currentPlayer = 1;
 	int mark = 1;
-	
+
 	GameBoard board = new GameBoard();
-	GameBot bot; 
+	GameBot bot;
 	Scanner scan = new Scanner(System.in);
 
 	public GameCore() {
@@ -23,14 +23,11 @@ public class GameCore {
 
 	public void mainLoop() {
 		while (!isGameOver) {
-			System.out.println("É a vez do jogador " + currentPlayer);
+			currentPlayer();
 			choosePosition();
-			setPosition();
 			board.printBoard();
 			checkWinner();
-			changeCurrentPlayer();
-			updateMark();
-			
+
 			if (numOfPlays == 9) {
 				isGameOver = true;
 				System.out.println("Fim de jogo! Empate!!!");
@@ -41,13 +38,18 @@ public class GameCore {
 
 	public void choosePosition() {
 		if (currentPlayer == 1) {
-			System.out.println("Escolha a posição (1-9): ");
-			selectedPosition = scan.nextInt();
+			boolean isEmpty = false;
 
-			while (selectedPosition < 1 || selectedPosition > 9) {
-				System.out.println("Posição inválida!");
+			while (!isEmpty) {
 				System.out.println("Escolha a posição (1-9): ");
 				selectedPosition = scan.nextInt();
+
+				while (selectedPosition < 1 || selectedPosition > 9) {
+					System.out.println("Posição inválida!");
+					System.out.println("Escolha a posição (1-9): ");
+					selectedPosition = scan.nextInt();
+				}
+				isEmpty = board.isEmpty(selectedPosition - 1);
 			}
 			selectedPosition = selectedPosition - 1;
 		}
@@ -55,24 +57,16 @@ public class GameCore {
 			selectedPosition = bot.getSelectedPosition();
 			System.out.println("O bot escolheu a posição " + (selectedPosition + 1));
 		}
-
-	}
-
-	public void isValid() {
-		isValid = board.isEmpty(selectedPosition);
+		
+		setPosition();
 	}
 
 	public void setPosition() {
-		isValid();
-		if (isValid) {
-			board.setPosition(selectedPosition, mark);
-			numOfPlays++;
-		} else {
-			System.out.println("Lugar já ocupado, escolha outra posição!");
-		}
+		board.setPosition(selectedPosition, mark);
+		numOfPlays++;
 	}
 
-	public void updateMark() {//update current valor
+	public void updateChar() {
 		if (currentPlayer == 1) {
 			mark = 1;
 		} else {
@@ -80,12 +74,14 @@ public class GameCore {
 		}
 	}
 
-	public void changeCurrentPlayer() {//usar ENUM
+	public void currentPlayer() {// usar ENUM
 		if (currentPlayer == 1) {
 			currentPlayer = 2;
 		} else {
 			currentPlayer = 1;
 		}
+		System.out.println("É a vez do jogador " + currentPlayer);
+		updateChar();
 	}
 
 	public void checkWinner() {
