@@ -23,6 +23,7 @@ public class GameCore {
 
 	public void mainLoop() {
 		while (!isGameOver) {
+			System.out.println("Jogada número " + (numOfPlays+1));
 			currentPlayer();
 			choosePosition();
 			board.printBoard();
@@ -52,6 +53,7 @@ public class GameCore {
 				isEmpty = board.isEmpty(selectedPosition - 1);
 			}
 			selectedPosition = selectedPosition - 1;
+			System.out.println("O jogador 1 escolheu a posição " + (selectedPosition + 1));
 		}
 		if (currentPlayer == 2) {
 			selectedPosition = bot.getSelectedPosition();
