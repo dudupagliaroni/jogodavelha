@@ -1,6 +1,5 @@
 package com.eduardo.jogodavelha;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class GameBot {
@@ -9,11 +8,13 @@ public class GameBot {
 
 	boolean isLosing;
 	boolean isWinning;
+	boolean isEmpty;
+	boolean wasLineStarted;
+
 
 	int selectedPosition;
 
-	ArrayList<int[]> winningLines = new ArrayList<int[]>();
-	ArrayList<int[]> losingLines = new ArrayList<int[]>();
+
 	int[] allPositions = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 	int[] row1 = { 0, 1, 2 };
 	int[] row2 = { 3, 4, 5 };
@@ -23,7 +24,7 @@ public class GameBot {
 	int[] column3 = { 2, 5, 8 };
 	int[] diagonal1 = { 0, 4, 8 };
 	int[] diagonal2 = { 2, 4, 6 };
-	int[] corners = { 0, 2, 6, 8 };
+	int[] corners = { 0, 2, 4, 6, 8 };
 
 	int[] allLines[] = { row1, row2, row3, column1, column2, column3, diagonal1, diagonal2 };
 
@@ -33,32 +34,69 @@ public class GameBot {
 
 	public void choosePosition() {
 
-		for (int[] line : allLines) {
-			isLosing(line);
-			if (isLosing == true) {
-				selectedPosition = chooseRandomIndex(line);
-				isLosing = false;
-				break;
-			}
-		}
+		while (!isEmpty) {
 
-		for (int[] line : allLines) {
-			isWinning(line);
-			if (isLosing == true) {
-				selectedPosition = chooseRandomIndex(line);
-				break;
-			}
-		}
-
-		if (board.board[4] == 0) {
-			selectedPosition = 4;
-		}
-		if (board.board[0] != 0 || board.board[2] != 0 || board.board[6] != 0 || board.board[8] != 0) {
-			selectedPosition = chooseRandomIndex(corners);
-		} else {
 			selectedPosition = chooseRandomIndex(allPositions);
-		}
 
+			while (GameCore.numOfPlays == 1 || GameCore.numOfPlays == 2) {
+
+				selectedPosition = chooseRandomIndex(corners);
+				if (board.board[selectedPosition] == 0) {
+					isEmpty = true;
+					break;
+				}
+
+			}
+
+			for (int[] line1 : allLines) {
+				wasLineStarted = false;
+				wasLineStarted(line1);
+				if (wasLineStarted == true) {
+					selectedPosition = chooseRandomIndex(line1);
+					break;
+				}
+			}
+
+			for (int[] line3 : allLines) {
+				isLosing = false;
+				isLosing(line3);
+				if (isLosing == true) {
+					selectedPosition = chooseRandomIndex(line3);
+					isLosing = false;
+
+				}
+			}
+
+			for (int[] line2 : allLines) {
+				isWinning = false;
+				isWinning(line2);
+				if (isWinning == true) {
+					selectedPosition = chooseRandomIndex(line2);
+					break;
+				}
+			}
+			if (board.board[selectedPosition] == 0) {
+				isEmpty = true;
+			}
+		}
+		isEmpty = false;
+	}
+
+	public void wasLineStarted(int[] line) {
+		int numOfMarksBot = 0;
+		int numOfMarksPlayer = 0;
+		for (int i = 0; i < line.length; i++) {
+			int index = line[i];
+			if (board.board[index] == -1) {
+				numOfMarksBot++;
+			}
+			if (board.board[index] == 1) {
+				numOfMarksPlayer++;
+			}
+		}
+		if (numOfMarksBot == 1 && numOfMarksPlayer == 0) {
+			wasLineStarted = true;
+		}
 	}
 
 	public void isLosing(int[] line) {
@@ -86,26 +124,19 @@ public class GameBot {
 	}
 
 	public void isWinning(int[] line) {
-		boolean isSafe = false;
-		for (int i = 0; i < line.length; i++) {
-			int index = line[i];
+		int numOfMarksBot = 0;
+		int numOfMarksPlayer = 0;
+		for (int j = 0; j < line.length; j++) {
+			int index = line[j];
+			if (board.board[index] == -1) {
+				numOfMarksBot++;
+			}
 			if (board.board[index] == 1) {
-				isSafe = true;
-				break;
+				numOfMarksPlayer++;
 			}
 		}
-
-		if (!isSafe) {
-			int numOfMarks = 0;
-			for (int j = 0; j < line.length; j++) {
-				int index = line[j];
-				if (board.board[index] == -1) {
-					numOfMarks++;
-				}
-			}
-			if (numOfMarks == 2) {
-				isWinning = true;
-			}
+		if (numOfMarksBot == 2 && numOfMarksPlayer == 0) {
+			isWinning = true;
 		}
 	}
 

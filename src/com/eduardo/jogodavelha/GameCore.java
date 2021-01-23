@@ -4,9 +4,9 @@ import java.util.Scanner;
 
 public class GameCore {
 
-	static int numOfPlays = 0;
+	static int numOfPlays = 1;
 	boolean isGameOver = false;
-	boolean isValid = false;
+	boolean hasWinner = false;
 	int selectedPosition;
 	int currentPlayer = 1;
 	int mark = 1;
@@ -23,13 +23,13 @@ public class GameCore {
 
 	public void mainLoop() {
 		while (!isGameOver) {
-			System.out.println("Jogada número " + (numOfPlays+1));
+			System.out.println("Jogada número " + (numOfPlays));
 			currentPlayer();
 			choosePosition();
 			board.printBoard();
 			checkWinner();
 
-			if (numOfPlays == 9) {
+			if (numOfPlays == 10 && hasWinner == false) {
 				isGameOver = true;
 				System.out.println("Fim de jogo! Empate!!!");
 			}
@@ -59,7 +59,7 @@ public class GameCore {
 			selectedPosition = bot.getSelectedPosition();
 			System.out.println("O bot escolheu a posição " + (selectedPosition + 1));
 		}
-		
+
 		setPosition();
 	}
 
@@ -76,113 +76,54 @@ public class GameCore {
 		}
 	}
 
-	public void currentPlayer() {// usar ENUM
-		if (currentPlayer == 1) {
-			currentPlayer = 2;
-		} else {
+	public void currentPlayer() {
+		if (numOfPlays % 2 == 1) {
 			currentPlayer = 1;
+		} else {
+			currentPlayer = 2;
 		}
 		System.out.println("É a vez do jogador " + currentPlayer);
 		updateChar();
 	}
 
 	public void checkWinner() {
-		// linha 1
-		switch (board.board[0] + board.board[1] + board.board[2]) {
-		case 3:
-			System.out.println("Jogador 1 ganhou");
-			isGameOver = true;
-			break;
-		case -3:
-			System.out.println("Jogador 2 ganhou");
-			isGameOver = true;
-			break;
-		}
 
-		// linha 2
-		switch (board.board[3] + board.board[4] + board.board[5]) {
-		case 3:
-			System.out.println("Jogador 1 ganhou");
-			isGameOver = true;
-			break;
-		case -3:
-			System.out.println("Jogador 2 ganhou");
-			isGameOver = true;
-			break;
-		}
+		int[] row1 = { 0, 1, 2 };
+		int[] row2 = { 3, 4, 5 };
+		int[] row3 = { 6, 7, 8 };
+		int[] column1 = { 0, 3, 6 };
+		int[] column2 = { 1, 4, 7 };
+		int[] column3 = { 2, 5, 8 };
+		int[] diagonal1 = { 0, 4, 8 };
+		int[] diagonal2 = { 2, 4, 6 };
+		int[] allLines[] = { row1, row2, row3, column1, column2, column3, diagonal1, diagonal2 };
 
-		// linha 3
-		switch (board.board[6] + board.board[7] + board.board[8]) {
-		case 3:
-			System.out.println("Jogador 1 ganhou");
-			isGameOver = true;
-			break;
-		case -3:
-			System.out.println("Jogador 2 ganhou");
-			isGameOver = true;
-			break;
-		}
+		for (int[] line : allLines) {
+			int numOfMarksBot = 0;
+			int numOfMarksPlayer = 0;
+			for (int i = 0; i < line.length; i++) {
+				int index = line[i];
+				if (board.board[index] == -1) {
+					numOfMarksBot++;
+				}
+				if (board.board[index] == 1) {
+					numOfMarksPlayer++;
+				}
+			}
+			if (numOfMarksBot == 3) {
+				System.out.println("Fim de Jogo! O Bot venceu!");
+				isGameOver = true;
+				hasWinner = true;
+				break;
+			}
 
-		// coluna 1
-		switch (board.board[0] + board.board[3] + board.board[6]) {
-		case 3:
-			System.out.println("Jogador 1 ganhou");
-			isGameOver = true;
-			break;
-		case -3:
-			System.out.println("Jogador 2 ganhou");
-			isGameOver = true;
-			break;
-		}
-
-		// coluna 2
-		switch (board.board[1] + board.board[4] + board.board[7]) {
-		case 3:
-			System.out.println("Jogador 1 ganhou");
-			isGameOver = true;
-			break;
-		case -3:
-			System.out.println("Jogador 2 ganhou");
-			isGameOver = true;
-			break;
-		}
-
-		// coluna 3
-		switch (board.board[2] + board.board[5] + board.board[8]) {
-		case 3:
-			System.out.println("Jogador 1 ganhou");
-			isGameOver = true;
-			break;
-		case -3:
-			System.out.println("Jogador 2 ganhou");
-			isGameOver = true;
-			break;
-		}
-
-		// diagonal 1
-		switch (board.board[0] + board.board[4] + board.board[8]) {
-		case 3:
-			System.out.println("Jogador 1 ganhou");
-			isGameOver = true;
-			break;
-		case -3:
-			System.out.println("Jogador 2 ganhou");
-			isGameOver = true;
-			break;
-		}
-
-		// diagonal 2
-		switch (board.board[2] + board.board[4] + board.board[6]) {
-		case 3:
-			System.out.println("Jogador 1 ganhou");
-			isGameOver = true;
-			break;
-		case -3:
-			System.out.println("Jogador 2 ganhou");
-			isGameOver = true;
-			break;
+			if (numOfMarksPlayer == 3) {
+				System.out.println("Fim de Jogo! O Jogador 1 venceu");
+				isGameOver = true;
+				hasWinner = true;
+				break;
+			}
 		}
 
 	}
-
 }
