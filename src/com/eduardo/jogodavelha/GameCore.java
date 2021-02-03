@@ -47,7 +47,7 @@ public class GameCore {
 
 				while (selectedPosition < 1 || selectedPosition > 9) {
 					System.out.println("Posição inválida!");
-					System.out.println("Escolha a posição (1-9): ");
+					System.out.println("Escolha a posição entre 1 e 9: ");
 					selectedPosition = scan.nextInt();
 				}
 				isEmpty = board.isEmpty(selectedPosition - 1);
@@ -68,7 +68,7 @@ public class GameCore {
 		numOfPlays++;
 	}
 
-	public void updateChar() {
+	public void updateMark() {
 		if (currentPlayer == 1) {
 			mark = 1;
 		} else {
@@ -83,7 +83,7 @@ public class GameCore {
 			currentPlayer = 2;
 		}
 		System.out.println("É a vez do jogador " + currentPlayer);
-		updateChar();
+		updateMark();
 	}
 
 	public void checkWinner() {
