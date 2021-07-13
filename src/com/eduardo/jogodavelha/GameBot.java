@@ -10,8 +10,6 @@ public class GameBot {
 	boolean isWinning;
 	boolean isEmpty;
 	boolean wasLineStarted;
-
-
 	int selectedPosition;
 
 
