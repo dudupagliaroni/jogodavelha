@@ -34,7 +34,7 @@ public class GameBoard {
 		this.board[position] = mark;
 	}
 
-	public boolean isEmpty(int position) {
+	public boolean isPositionEmpty(int position) {
 		if (this.board[position] == 0) {
 			return true;
 		} else {
@@ -43,4 +43,10 @@ public class GameBoard {
 		}
 	}
 
+	public void resetBoard() {
+		for (int i = 0; i < board.length; i ++) {
+			board[i] =0;
+		}
+	}
+	
 }

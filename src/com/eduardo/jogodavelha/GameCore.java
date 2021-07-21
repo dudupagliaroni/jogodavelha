@@ -1,5 +1,6 @@
 package com.eduardo.jogodavelha;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class GameCore {
@@ -7,6 +8,7 @@ public class GameCore {
 	static int numOfPlays = 1;
 	boolean isGameOver = false;
 	boolean hasWinner = false;
+	boolean PVP = false;
 	int selectedPosition;
 	int currentPlayer = 1;
 	int mark = 1;
@@ -18,49 +20,120 @@ public class GameCore {
 	public GameCore() {
 		bot = new GameBot(board);
 		board.printBoard();
+		setPVP();
 		mainLoop();
+		continuePlaying();
 	}
 
 	public void mainLoop() {
 		while (!isGameOver) {
 			System.out.println("Jogada número " + (numOfPlays));
-			currentPlayer();
+			if (numOfPlays == 1) {
+				currentPlayer = randomPlayerStart();
+				System.out.println("O jogador " + currentPlayer + " começa!");
+				if (currentPlayer == 1) {
+					mark = 1;
+				} else {
+					mark = -1;
+				}
+			} else {
+				changePlayer();
+			}
 			choosePosition();
 			board.printBoard();
 			checkWinner();
+
 
 			if (numOfPlays == 10 && hasWinner == false) {
 				isGameOver = true;
 				System.out.println("Fim de jogo! Empate!!!");
 			}
 
+			if (isGameOver == true) {
+				continuePlaying();
+			}
+
+		}
+
+	}
+
+	public void continuePlaying() {
+		System.out.println("Deseja jogar novamente? 1-Sim/2-Não");
+		int option = scan.nextInt();
+
+		if (option == 1) {
+			isGameOver = false;
+			numOfPlays = 1;
+			board.resetBoard();
+			System.out.println("Novo jogo iniciado!");
+		} else {
+			System.out.println("Fim de Jogo!");
+			System.exit(0);
+		}
+	}
+
+	public void numberOfPlayers() {
+
+	}
+
+	public int randomPlayerStart() {
+		int[] players = { 1, 2 };
+		int rnd = new Random().nextInt(players.length);
+		return players[rnd];
+
+	}
+
+	public boolean setPVP() {
+		System.out.println("Jogar 1x1 ou contra um bot? 1 - PVP / 2 - Bot");
+		int option = scan.nextInt();
+		if (option == 1) {
+			return PVP = true;
+		} else {
+			return PVP = false;
 		}
 	}
 
 	public void choosePosition() {
-		if (currentPlayer == 1) {
-			boolean isEmpty = false;
+		if (PVP == true) {
+			humanMove();
 
-			while (!isEmpty) {
-				System.out.println("Escolha a posição (1-9): ");
-				selectedPosition = scan.nextInt();
-
-				while (selectedPosition < 1 || selectedPosition > 9) {
-					System.out.println("Posição inválida!");
-					System.out.println("Escolha a posição entre 1 e 9: ");
-					selectedPosition = scan.nextInt();
-				}
-				isEmpty = board.isEmpty(selectedPosition - 1);
-			}
-			selectedPosition = selectedPosition - 1;
-			System.out.println("O jogador 1 escolheu a posição " + (selectedPosition + 1));
-		}
-		if (currentPlayer == 2) {
-			selectedPosition = bot.getSelectedPosition();
-			System.out.println("O bot escolheu a posição " + (selectedPosition + 1));
+		} else if (currentPlayer == 1 && PVP == false) {
+			humanMove();
+		} else if (currentPlayer == 2 && PVP == false) {
+			botMove();
 		}
 
 		setPosition();
+
+	}
+
+	public void botMove() {
+		selectedPosition = bot.getSelectedPosition();
+		System.out.println("O bot escolheu a posição " + (selectedPosition + 1));
+	}
+
+	public void humanMove() {
+
+		boolean isEmpty = false;
+
+		while (!isEmpty) {
+
+			System.out.println("Escolha a posição (1-9): ");
+			selectedPosition = scan.nextInt();
+
+			while (selectedPosition < 1 || selectedPosition > 9) {
+				System.out.println("Posição inválida!");
+				System.out.println("Escolha a posição entre 1 e 9: ");
+				selectedPosition = scan.nextInt();
+			}
+
+			isEmpty = board.isPositionEmpty(selectedPosition - 1);
+
+		}
+
+		selectedPosition = selectedPosition - 1;
+		System.out.println("O jogador " + currentPlayer + " escolheu a posição " + (selectedPosition + 1));
+
 	}
 
 	public void setPosition() {
@@ -68,22 +141,16 @@ public class GameCore {
 		numOfPlays++;
 	}
 
-	public void updateMark() {
+	public void changePlayer() {
 		if (currentPlayer == 1) {
-			mark = 1;
-		} else {
-			mark = -1;
-		}
-	}
-
-	public void currentPlayer() {
-		if (numOfPlays % 2 == 1) {
-			currentPlayer = 1;
-		} else {
 			currentPlayer = 2;
+			mark = -1;
+		} else {
+			currentPlayer = 1;
+			mark = 1;
 		}
 		System.out.println("É a vez do jogador " + currentPlayer);
-		updateMark();
+
 	}
 
 	public void checkWinner() {
@@ -111,18 +178,19 @@ public class GameCore {
 				}
 			}
 			if (numOfMarksBot == 3) {
-				System.out.println("Fim de Jogo! O Bot venceu!");
+				System.out.println("Fim de Jogo! O Bot venceu fazendo a linha " + line + "\n");
 				isGameOver = true;
 				hasWinner = true;
 				break;
 			}
 
 			if (numOfMarksPlayer == 3) {
-				System.out.println("Fim de Jogo! O Jogador 1 venceu");
+				System.out.println("Fim de Jogo! O Jogador 1 venceu fazendo a linha " + line + "\n");
 				isGameOver = true;
 				hasWinner = true;
 				break;
 			}
+
 		}
 
 	}

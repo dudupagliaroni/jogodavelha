@@ -12,7 +12,6 @@ public class GameBot {
 	boolean wasLineStarted;
 	int selectedPosition;
 
-
 	int[] allPositions = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 	int[] row1 = { 0, 1, 2 };
 	int[] row2 = { 3, 4, 5 };
@@ -46,30 +45,30 @@ public class GameBot {
 
 			}
 
-			for (int[] line1 : allLines) {
+			for (int[] lineStarted : allLines) {
 				wasLineStarted = false;
-				wasLineStarted(line1);
+				wasLineStarted(lineStarted);
 				if (wasLineStarted == true) {
-					selectedPosition = chooseRandomIndex(line1);
+					selectedPosition = chooseRandomIndex(lineStarted);
 					break;
 				}
 			}
 
-			for (int[] line3 : allLines) {
+			for (int[] lineLoosing : allLines) {
 				isLosing = false;
-				isLosing(line3);
+				isLosing(lineLoosing);
 				if (isLosing == true) {
-					selectedPosition = chooseRandomIndex(line3);
+					selectedPosition = chooseRandomIndex(lineLoosing);
 					isLosing = false;
 
 				}
 			}
 
-			for (int[] line2 : allLines) {
+			for (int[] lineWinning : allLines) {
 				isWinning = false;
-				isWinning(line2);
+				isWinning(lineWinning);
 				if (isWinning == true) {
-					selectedPosition = chooseRandomIndex(line2);
+					selectedPosition = chooseRandomIndex(lineWinning);
 					break;
 				}
 			}
