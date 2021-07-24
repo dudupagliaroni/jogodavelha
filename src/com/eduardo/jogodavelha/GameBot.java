@@ -26,10 +26,10 @@ public class GameBot {
 	int[] allLines[] = { row1, row2, row3, column1, column2, column3, diagonal1, diagonal2 };
 
 	public GameBot(GameBoard board) {
-		setBoard(board);
+		setBoard(board); //jogar o board na função
 	}
 
-	public void choosePosition() {
+	public void choosePosition() { //usar board como entrada
 
 		while (!isEmpty) {
 
@@ -160,8 +160,5 @@ public class GameBot {
 		return selectedPosition;
 	}
 
-	public void setSelectedPosition(int selectedPosition) {
-		this.selectedPosition = selectedPosition;
-	}
 
 }

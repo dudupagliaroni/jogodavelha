@@ -5,13 +5,15 @@ import java.util.Scanner;
 
 public class GameCore {
 
-	static int numOfPlays = 1;
-	boolean isGameOver = false;
-	boolean hasWinner = false;
-	boolean PVP = false;
-	int selectedPosition;
-	int currentPlayer = 1;
-	int mark = 1;
+	private int numOfPlays = 1;
+	private boolean isGameOver = false;
+	private boolean hasWinner = false;
+	private boolean PVP = false;
+	private int userSelectedPosition;
+	private int currentPlayer = 1;
+	private int playerBoardMark = 1; // são 3 estados - como consertar isso?
+	private int pointsPlayer1;
+	private int pointsPlayer2;
 
 	GameBoard board = new GameBoard();
 	GameBot bot;
@@ -21,7 +23,7 @@ public class GameCore {
 		bot = new GameBot(board);
 		board.printBoard();
 		setPVP();
-		mainLoop();
+		mainLoop(); // criar game start fora do construtor
 		continuePlaying();
 	}
 
@@ -29,12 +31,12 @@ public class GameCore {
 		while (!isGameOver) {
 			System.out.println("Jogada número " + (numOfPlays));
 			if (numOfPlays == 1) {
-				currentPlayer = randomPlayerStart();
+				currentPlayer = randomPlayerStart(); // colocar numa função
 				System.out.println("O jogador " + currentPlayer + " começa!");
 				if (currentPlayer == 1) {
-					mark = 1;
+					playerBoardMark = 1;
 				} else {
-					mark = -1;
+					playerBoardMark = -1;
 				}
 			} else {
 				changePlayer();
@@ -43,13 +45,12 @@ public class GameCore {
 			board.printBoard();
 			checkWinner();
 
-
-			if (numOfPlays == 10 && hasWinner == false) {
+			if (numOfPlays == 10 && !hasWinner) {
 				isGameOver = true;
 				System.out.println("Fim de jogo! Empate!!!");
 			}
 
-			if (isGameOver == true) {
+			if (isGameOver) {
 				continuePlaying();
 			}
 
@@ -58,6 +59,8 @@ public class GameCore {
 	}
 
 	public void continuePlaying() {
+		System.out.println("O Placar esta:");
+		System.out.println("Jogador 1 " + pointsPlayer1 + " x " + pointsPlayer2 + " Jogador 2");
 		System.out.println("Deseja jogar novamente? 1-Sim/2-Não");
 		int option = scan.nextInt();
 
@@ -83,7 +86,7 @@ public class GameCore {
 
 	}
 
-	public boolean setPVP() {
+	public boolean setPVP() { // mudar nome da função
 		System.out.println("Jogar 1x1 ou contra um bot? 1 - PVP / 2 - Bot");
 		int option = scan.nextInt();
 		if (option == 1) {
@@ -108,46 +111,46 @@ public class GameCore {
 	}
 
 	public void botMove() {
-		selectedPosition = bot.getSelectedPosition();
-		System.out.println("O bot escolheu a posição " + (selectedPosition + 1));
+		userSelectedPosition = bot.getSelectedPosition();
+		System.out.println("O bot escolheu a posição " + (userSelectedPosition + 1));
 	}
 
 	public void humanMove() {
 
 		boolean isEmpty = false;
 
-		while (!isEmpty) {
+		while (!isEmpty) { //tentar fugir dos while
 
 			System.out.println("Escolha a posição (1-9): ");
-			selectedPosition = scan.nextInt();
+			userSelectedPosition = scan.nextInt();
 
-			while (selectedPosition < 1 || selectedPosition > 9) {
+			while (userSelectedPosition < 1 || userSelectedPosition > 9) {
 				System.out.println("Posição inválida!");
 				System.out.println("Escolha a posição entre 1 e 9: ");
-				selectedPosition = scan.nextInt();
+				userSelectedPosition = scan.nextInt();
 			}
 
-			isEmpty = board.isPositionEmpty(selectedPosition - 1);
+			isEmpty = board.isPositionEmpty(userSelectedPosition - 1);
 
 		}
 
-		selectedPosition = selectedPosition - 1;
-		System.out.println("O jogador " + currentPlayer + " escolheu a posição " + (selectedPosition + 1));
+		userSelectedPosition = userSelectedPosition - 1;
+		System.out.println("O jogador " + currentPlayer + " escolheu a posição " + (userSelectedPosition + 1));
 
 	}
 
 	public void setPosition() {
-		board.setPosition(selectedPosition, mark);
+		board.setPosition(userSelectedPosition, playerBoardMark);
 		numOfPlays++;
 	}
 
 	public void changePlayer() {
 		if (currentPlayer == 1) {
 			currentPlayer = 2;
-			mark = -1;
+			playerBoardMark = -1;
 		} else {
 			currentPlayer = 1;
-			mark = 1;
+			playerBoardMark = 1;
 		}
 		System.out.println("É a vez do jogador " + currentPlayer);
 
@@ -166,32 +169,35 @@ public class GameCore {
 		int[] allLines[] = { row1, row2, row3, column1, column2, column3, diagonal1, diagonal2 };
 
 		for (int[] line : allLines) {
-			int numOfMarksBot = 0;
-			int numOfMarksPlayer = 0;
+			int numOfMarksPlayer2 = 0;
+			int numOfMarksPlayer1 = 0;
 			for (int i = 0; i < line.length; i++) {
 				int index = line[i];
 				if (board.board[index] == -1) {
-					numOfMarksBot++;
+					numOfMarksPlayer2++;
 				}
 				if (board.board[index] == 1) {
-					numOfMarksPlayer++;
+					numOfMarksPlayer1++;
 				}
 			}
-			if (numOfMarksBot == 3) {
-				System.out.println("Fim de Jogo! O Bot venceu fazendo a linha " + line + "\n");
+			if (numOfMarksPlayer2 == 3) {
+				System.out.println("Fim de Jogo! O jogador " + currentPlayer + " venceu! \n");
 				isGameOver = true;
 				hasWinner = true;
+				pointsPlayer2++;
 				break;
 			}
 
-			if (numOfMarksPlayer == 3) {
-				System.out.println("Fim de Jogo! O Jogador 1 venceu fazendo a linha " + line + "\n");
+			if (numOfMarksPlayer1 == 3) {
+				System.out.println("Fim de Jogo! O Jogador " + currentPlayer + " venceu! \n");
 				isGameOver = true;
 				hasWinner = true;
+				pointsPlayer1++;
 				break;
 			}
 
 		}
 
 	}
+
 }
