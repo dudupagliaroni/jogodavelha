@@ -4,103 +4,91 @@ import java.util.Random;
 
 public class GameBot {
 
-	GameBoard board = new GameBoard();
+	private boolean isLineLosing;
+	private boolean isLineWinning;
+	private boolean isBoardPositionEmpty;
+	private boolean isLineStarted;
+	private int botSelectedPosition;
 
-	boolean isLosing;
-	boolean isWinning;
-	boolean isEmpty;
-	boolean wasLineStarted;
-	int selectedPosition;
+	public int botChoosePosition(GameBoard board) {
 
-	int[] allPositions = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-	int[] row1 = { 0, 1, 2 };
-	int[] row2 = { 3, 4, 5 };
-	int[] row3 = { 6, 7, 8 };
-	int[] column1 = { 0, 3, 6 };
-	int[] column2 = { 1, 4, 7 };
-	int[] column3 = { 2, 5, 8 };
-	int[] diagonal1 = { 0, 4, 8 };
-	int[] diagonal2 = { 2, 4, 6 };
-	int[] corners = { 0, 2, 4, 6, 8 };
+		while (!isBoardPositionEmpty) {
 
-	int[] allLines[] = { row1, row2, row3, column1, column2, column3, diagonal1, diagonal2 };
+			botSelectedPosition = chooseRandomIndex(board.getBoard(), board);
 
-	public GameBot(GameBoard board) {
-		setBoard(board); //jogar o board na função
-	}
+			if (GameCore.getNumOfPlays() == 1 || GameCore.getNumOfPlays() == 2) {
 
-	public void choosePosition() { //usar board como entrada
-
-		while (!isEmpty) {
-
-			selectedPosition = chooseRandomIndex(allPositions);
-
-			while (GameCore.numOfPlays == 1 || GameCore.numOfPlays == 2) {
-
-				selectedPosition = chooseRandomIndex(corners);
-				if (board.board[selectedPosition] == 0) {
-					isEmpty = true;
-					break;
+				botSelectedPosition = chooseRandomIndex(board.getBoardCornersAndCenter(), board);
+				if (board.getBoard()[botSelectedPosition] == 0) {
+					isBoardPositionEmpty = true;
 				}
 
-			}
+			} else {
 
-			for (int[] lineStarted : allLines) {
-				wasLineStarted = false;
-				wasLineStarted(lineStarted);
-				if (wasLineStarted == true) {
-					selectedPosition = chooseRandomIndex(lineStarted);
-					break;
-				}
-			}
+				checkGameConditions(board);
 
-			for (int[] lineLoosing : allLines) {
-				isLosing = false;
-				isLosing(lineLoosing);
-				if (isLosing == true) {
-					selectedPosition = chooseRandomIndex(lineLoosing);
-					isLosing = false;
-
-				}
-			}
-
-			for (int[] lineWinning : allLines) {
-				isWinning = false;
-				isWinning(lineWinning);
-				if (isWinning == true) {
-					selectedPosition = chooseRandomIndex(lineWinning);
-					break;
-				}
-			}
-			if (board.board[selectedPosition] == 0) {
-				isEmpty = true;
 			}
 		}
-		isEmpty = false;
+		isBoardPositionEmpty = false;
+		return botSelectedPosition;
 	}
 
-	public void wasLineStarted(int[] line) {
+	public void checkGameConditions(GameBoard board) {
+
+		for (int[] lineStarted : board.getAllLines()) { // check se a linha foi começada
+			isLineStarted = false;
+			checkIfLineStarted(lineStarted, board);
+			if (isLineStarted == true) {
+				botSelectedPosition = chooseRandomIndex(lineStarted, board);
+				break;
+			}
+		}
+
+		for (int[] lineLoosing : board.getAllLines()) { // check se a linha está perdendo
+			isLineLosing = false;
+			checkIfLineisLosing(lineLoosing, board);
+			if (isLineLosing == true) {
+				botSelectedPosition = chooseRandomIndex(lineLoosing, board);
+				isLineLosing = false;
+				break;
+			}
+		}
+
+		for (int[] lineWinning : board.getAllLines()) { // check se a linha esta ganhando
+			isLineWinning = false;
+			checkIfLineisWinning(lineWinning, board);
+			if (isLineWinning == true) {
+				botSelectedPosition = chooseRandomIndex(lineWinning, board);
+				break;
+			}
+		}
+		if (board.getBoard()[botSelectedPosition] == 0) {
+			isBoardPositionEmpty = true;
+		}
+	}
+
+	public void checkIfLineStarted(int[] line, GameBoard board) {
 		int numOfMarksBot = 0;
 		int numOfMarksPlayer = 0;
 		for (int i = 0; i < line.length; i++) {
 			int index = line[i];
-			if (board.board[index] == -1) {
+			if (board.getBoard()[index] == -1) {
 				numOfMarksBot++;
 			}
-			if (board.board[index] == 1) {
+			if (board.getBoard()[index] == 1) {
 				numOfMarksPlayer++;
 			}
 		}
 		if (numOfMarksBot == 1 && numOfMarksPlayer == 0) {
-			wasLineStarted = true;
+			isLineStarted = true;
 		}
 	}
 
-	public void isLosing(int[] line) {
+	public void checkIfLineisLosing(int[] line, GameBoard board) {
 		boolean isSafe = false;
 		for (int i = 0; i < line.length; i++) {
 			int index = line[i];
-			if (board.board[index] == -1) {
+			if (board.getBoard()[index] == -1) {
 				isSafe = true;
 				break;
 			}
@@ -110,55 +98,45 @@ public class GameBot {
 			int numOfMarks = 0;
 			for (int j = 0; j < line.length; j++) {
 				int index = line[j];
-				if (board.board[index] == 1) {
+				if (board.getBoard()[index] == 1) {
 					numOfMarks++;
 				}
 			}
 			if (numOfMarks == 2) {
-				isLosing = true;
+				isLineLosing = true;
 			}
 		}
 	}
 
-	public void isWinning(int[] line) {
+	public void checkIfLineisWinning(int[] line, GameBoard board) {
 		int numOfMarksBot = 0;
 		int numOfMarksPlayer = 0;
 		for (int j = 0; j < line.length; j++) {
 			int index = line[j];
-			if (board.board[index] == -1) {
+			if (board.getBoard()[index] == -1) {
 				numOfMarksBot++;
 			}
-			if (board.board[index] == 1) {
+			if (board.getBoard()[index] == 1) {
 				numOfMarksPlayer++;
 			}
 		}
 		if (numOfMarksBot == 2 && numOfMarksPlayer == 0) {
-			isWinning = true;
+			isLineWinning = true;
 		}
 	}
 
-	public int chooseRandomIndex(int[] line) {
+	public int chooseRandomIndex(int[] line, GameBoard board) {
 		int rnd = 0;
 		int index = 0;
 		boolean isEmpty = false;
 		while (!isEmpty) {
 			rnd = new Random().nextInt(line.length);
 			index = line[rnd];
-			if (board.board[index] == 0) {
+			if (board.getBoard()[index] == 0) {
 				isEmpty = true;
 			}
 		}
 		return index;
 	}
-
-	public void setBoard(GameBoard board) {
-		this.board = board;
-	}
-
-	public int getSelectedPosition() {
-		choosePosition();
-		return selectedPosition;
-	}
-
 
 }

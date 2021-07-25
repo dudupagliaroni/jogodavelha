@@ -4,7 +4,6 @@ public class GameBoard {
 
 	private int board[] = new int[9];
 
-	private int[] allPositions = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 	private int[] row1 = { 0, 1, 2 };
 	private int[] row2 = { 3, 4, 5 };
 	private int[] row3 = { 6, 7, 8 };
@@ -25,28 +24,28 @@ public class GameBoard {
 			for (int j = 0; j < 3; j++) {
 				switch (board[k]) {
 				case 0:
-					System.out.print("_");
+					System.out.print(" _ ");
 					break;
 				case 1:
-					System.out.print("X");
+					System.out.print(" X ");
 					break;
 				case -1:
-					System.out.print("O");
+					System.out.print(" O ");
 					break;
 				}
 				k++;
 			}
 			System.out.println();
-			System.out.println("-+-+-");
+			System.out.println("---------");
 		}
 		System.out.println();
 	}
 
-	public void setPosition(int position, int mark) {
-		this.board[position] = mark;
+	public void setBoardPosition(int position, int playerChosenMark) {
+		this.board[position] = playerChosenMark;
 	}
 
-	public boolean isPositionEmpty(int position) {
+	public boolean isBoardPositionEmpty(int position) {
 		if (this.board[position] == 0) {
 			return true;
 		} else {
@@ -59,6 +58,18 @@ public class GameBoard {
 		for (int i = 0; i < board.length; i++) {
 			board[i] = 0;
 		}
+	}
+
+	public int[] getBoard() {
+		return board;
+	}
+	
+	public int[] getBoardCornersAndCenter() {
+		return boardCornersAndCenter;
+	}
+	
+	public int[][] getAllLines() {
+		return this.allLines;
 	}
 
 }
