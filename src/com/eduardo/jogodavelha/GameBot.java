@@ -14,9 +14,9 @@ public class GameBot {
 
 		while (!isBoardPositionEmpty) {
 
-			botSelectedPosition = chooseRandomIndex(board.getBoard(), board);
+			int botSelectedPosition;
 
-			if (GameCore.getNumOfPlays() == 1 || GameCore.getNumOfPlays() == 2) {
+			if (GameCore.getNumOfMoves() == 1 || GameCore.getNumOfMoves() == 2) {
 
 				botSelectedPosition = chooseRandomIndex(board.getBoardCornersAndCenter(), board);
 				if (board.getBoard()[botSelectedPosition] == 0) {
@@ -25,7 +25,7 @@ public class GameBot {
 
 			} else {
 
-				checkGameConditions(board);
+				botSelectedPosition = checkGameConditions(board);
 
 			}
 		}
@@ -33,7 +33,7 @@ public class GameBot {
 		return botSelectedPosition;
 	}
 
-	public void checkGameConditions(GameBoard board) {
+	public int checkGameConditions(GameBoard board) {
 
 		for (int[] lineStarted : board.getAllLines()) { // check se a linha foi começada
 			isLineStarted = false;
@@ -49,7 +49,6 @@ public class GameBot {
 			checkIfLineisLosing(lineLoosing, board);
 			if (isLineLosing == true) {
 				botSelectedPosition = chooseRandomIndex(lineLoosing, board);
-				isLineLosing = false;
 				break;
 			}
 		}
@@ -64,7 +63,9 @@ public class GameBot {
 		}
 		if (board.getBoard()[botSelectedPosition] == 0) {
 			isBoardPositionEmpty = true;
+			return botSelectedPosition;
 		}
+		return botSelectedPosition;
 	}
 
 	public void checkIfLineStarted(int[] line, GameBoard board) {

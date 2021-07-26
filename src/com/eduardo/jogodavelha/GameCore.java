@@ -41,12 +41,7 @@ public class GameCore {
 			
 			chooseBoardPosition();
 			board.printBoard();
-			checkGameWinner();
-
-			if (numOfMoves == 10 && !gameHasWinner) {
-				isGameOver = true;
-				System.out.println("Fim de jogo! Empate!!!");
-			}
+			isGameOver = checkGameWinner();
 
 			if (isGameOver) {
 				chooseNextMach();
@@ -156,7 +151,7 @@ public class GameCore {
 
 	}
 
-	public void checkGameWinner() {
+	public boolean checkGameWinner() {
 
 		
 		for (int[] line : board.getAllLines()) {
@@ -188,10 +183,17 @@ public class GameCore {
 			}
 
 		}
+		
+		if (numOfMoves == 10) {
+			isGameOver = true;
+			System.out.println("Fim de jogo! Empate!!!");
+		}
+		
+		return isGameOver;
 
 	}
 
-	public static int getNumOfPlays() {
+	public static int getNumOfMoves() {
 		return numOfMoves;
 	}
 
