@@ -16,9 +16,6 @@ public class GameBoard {
 	private int[] allPositions = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 	private int[] allLines[] = { row1, row2, row3, column1, column2, column3, diagonal1, diagonal2 };
 
-	public GameBoard() {
-	}
-
 	public void printBoard() {
 		int k = 0;
 		for (int i = 0; i < 3; i++) {
@@ -72,8 +69,7 @@ public class GameBoard {
 	public int[][] getAllLines() {
 		return this.allLines;
 	}
-	
-	
+
 	public int[] getAllPositions() {
 		return allPositions;
 	}

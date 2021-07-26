@@ -1,5 +1,7 @@
 package com.eduardo.jogodavelha;
 
+import java.lang.reflect.Field;
+
 public class TesteLines {
 
 	static int index = 0;
@@ -22,13 +24,27 @@ public class TesteLines {
 		GameBot bot = new GameBot();
 		int[] lineTest = { 0, 1, 2 };
 		int[] boardTest = { -1, -1, -1, 0, 1, -1, -1, 1, -1 };
-		int[] emptyBoard = { 0, 0, 0, -1, 0, 0, 0, 0, 0 };
+		int[] emptyBoard = { 0, 0, 0, 0, -1, 0, 0, 0, 0 };
 		board.setBoard(emptyBoard);
 		board.printBoard();
 
 		System.out.println("is started?");
+		int numLine = 1;
 		for (int[] line1 : allLines) {
-			System.out.println(bot.checkIfLineStarted(line1, board));
+			System.out.println("Line " + line1 + " " + bot.checkIfLineStarted(line1, board));
+			Class<?> c = line1.getClass(); 
+			for (Field field : c.getDeclaredFields()) 
+			{ 
+			  try 
+			  { 
+			    System.out.println(field.getName() + "= " +  field.get(c).toString()); 
+			  } 
+			  catch (IllegalAccessException e) 
+			  { 
+			    e.printStackTrace(); 
+			  } 
+			} 
+			numLine++;
 		}
 
 		System.out.println();
@@ -47,7 +63,7 @@ public class TesteLines {
 
 		System.out.println("Random " + bot.chooseRandomPosition(allPositions, board));
 
-		System.out.println("Se a linha comecou " + bot.positionIfLineWasStarted(board));
+		System.out.println("line was started " + bot.positionIfLineWasStarted(board));
 		System.out.println("line is loosing " + bot.positionIfLineIsLoosing(board));
 		System.out.println("line is winning " + bot.positionIfLineIsWinning(board));
 
@@ -55,7 +71,10 @@ public class TesteLines {
 		
 		board.printBoard();
 		
+		
 
 	}
+
+
 
 }
