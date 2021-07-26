@@ -1,10 +1,9 @@
 package com.eduardo.jogodavelha;
 
 import java.lang.reflect.Field;
+import java.util.Random;
 
 public class TesteLines {
-
-	
 
 	static int[] row1 = { 0, 1, 2 };
 	static int[] row2 = { 3, 4, 5 };
@@ -23,15 +22,12 @@ public class TesteLines {
 	int[] lineTest = { 0, 1, 2 };
 	int[] boardTest = { -1, -1, -1, 0, 1, -1, -1, 1, -1 };
 	int[] emptyBoard = { 0, 0, 0, 0, -1, 0, 0, 0, 0 };
-	
-	
-	
+
 	public static void main(String[] args) {
 
-
+		board = randomBoard();
 
 		System.out.println("is started?");
-		int numLine = 1;
 		for (int[] line1 : allLines) {
 			System.out.println(bot.checkIfLineStarted(line1, board));
 		}
@@ -50,27 +46,37 @@ public class TesteLines {
 
 		System.out.println();
 
-		System.out.println("Random " + bot.chooseRandomPosition(allPositions, board));
-
 		System.out.println("line was started " + bot.positionIfLineWasStarted(board));
 		System.out.println("line is loosing " + bot.positionIfLineIsLoosing(board));
 		System.out.println("line is winning " + bot.positionIfLineIsWinning(board));
 
 		System.out.println("método do bot escolher " + bot.botChoosePosition(board));
-		
+
 		board.printBoard();
-		
-	}
-	
-	public int[] randomBoard() {
-		int[] mark = {-1,1};
-		for (int position : allP)
-	}
-		
-		
 
 	}
 
+	public static GameBoard randomBoard() {
+		int rnd = 0;
+		int[] players = { 1, -1 };
+		int mark = 0;
+		int[] allPosition = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+		int pos = 0;
+		boolean isEmpty = false;
 
+		while (!isEmpty) {
+			for (int i = 0; i < 7; i++) {
+				rnd = new Random().nextInt(players.length);
+				mark = players[rnd];
+				rnd = new Random().nextInt(allPosition.length);
+				pos = allPosition[rnd];
+				if (board.getBoard()[pos] == 0) {
+					board.setBoardPosition(pos, mark);
+					isEmpty = true;
+				}
 
+			}
+		}
+		return board;
+	}
 }
