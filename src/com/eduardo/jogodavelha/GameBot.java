@@ -4,71 +4,30 @@ import java.util.Random;
 
 public class GameBot {
 
-	private boolean isLineLosing;
-	private boolean isLineWinning;
-	private boolean isBoardPositionEmpty;
-	private boolean isLineStarted;
-	private int botSelectedPosition;
+	private int botSelectedPosition = 0;
 
 	public int botChoosePosition(GameBoard board) {
+		
+		botSelectedPosition = chooseRandomPosition(board.getAllPositions(),board);
+		botSelectedPosition = positionIfLineWasStarted(board);
+		botSelectedPosition = positionIfLineIsLoosing(board);
+		botSelectedPosition = positionIfLineIsWinning(board);
 
-		while (!isBoardPositionEmpty) {
-
-			int botSelectedPosition;
-
-			if (GameCore.getNumOfMoves() == 1 || GameCore.getNumOfMoves() == 2) {
-
-				botSelectedPosition = chooseRandomIndex(board.getBoardCornersAndCenter(), board);
-				if (board.getBoard()[botSelectedPosition] == 0) {
-					isBoardPositionEmpty = true;
-				}
-
-			} else {
-
-				botSelectedPosition = checkGameConditions(board);
-
-			}
-		}
-		isBoardPositionEmpty = false;
 		return botSelectedPosition;
 	}
 
-	public int checkGameConditions(GameBoard board) {
-
+	public int positionIfLineWasStarted(GameBoard board) {
 		for (int[] lineStarted : board.getAllLines()) { // check se a linha foi começada
-			isLineStarted = false;
-			checkIfLineStarted(lineStarted, board);
-			if (isLineStarted == true) {
-				botSelectedPosition = chooseRandomIndex(lineStarted, board);
+			if (checkIfLineStarted(lineStarted, board)) {
+				botSelectedPosition = chooseRandomPosition(lineStarted, board);
 				break;
 			}
-		}
-
-		for (int[] lineLoosing : board.getAllLines()) { // check se a linha está perdendo
-			isLineLosing = false;
-			checkIfLineisLosing(lineLoosing, board);
-			if (isLineLosing == true) {
-				botSelectedPosition = chooseRandomIndex(lineLoosing, board);
-				break;
-			}
-		}
-
-		for (int[] lineWinning : board.getAllLines()) { // check se a linha esta ganhando
-			isLineWinning = false;
-			checkIfLineisWinning(lineWinning, board);
-			if (isLineWinning == true) {
-				botSelectedPosition = chooseRandomIndex(lineWinning, board);
-				break;
-			}
-		}
-		if (board.getBoard()[botSelectedPosition] == 0) {
-			isBoardPositionEmpty = true;
-			return botSelectedPosition;
 		}
 		return botSelectedPosition;
 	}
 
-	public void checkIfLineStarted(int[] line, GameBoard board) {
+	public boolean checkIfLineStarted(int[] line, GameBoard board) {
+		boolean isLineStarted = false;
 		int numOfMarksBot = 0;
 		int numOfMarksPlayer = 0;
 		for (int i = 0; i < line.length; i++) {
@@ -83,19 +42,31 @@ public class GameBot {
 		if (numOfMarksBot == 1 && numOfMarksPlayer == 0) {
 			isLineStarted = true;
 		}
+		return isLineStarted;
 	}
 
-	public void checkIfLineisLosing(int[] line, GameBoard board) {
-		boolean isSafe = false;
+	public int positionIfLineIsLoosing(GameBoard board) {
+		for (int[] lineLoosing : board.getAllLines()) { // check se a linha está perdendo
+			if (checkIfLineisLosing(lineLoosing, board)) {
+				botSelectedPosition = chooseRandomPosition(lineLoosing, board);
+				break;
+			}
+		}
+		return botSelectedPosition;
+	}
+
+	public boolean checkIfLineisLosing(int[] line, GameBoard board) {
+		boolean isLineLosing = false;
+		boolean isLineSafe = false;
 		for (int i = 0; i < line.length; i++) {
 			int index = line[i];
 			if (board.getBoard()[index] == -1) {
-				isSafe = true;
+				isLineSafe = true;
 				break;
 			}
 		}
 
-		if (!isSafe) {
+		if (!isLineSafe) {
 			int numOfMarks = 0;
 			for (int j = 0; j < line.length; j++) {
 				int index = line[j];
@@ -107,9 +78,21 @@ public class GameBot {
 				isLineLosing = true;
 			}
 		}
+		return isLineLosing;
 	}
 
-	public void checkIfLineisWinning(int[] line, GameBoard board) {
+	public int positionIfLineIsWinning(GameBoard board) {
+		for (int[] lineWinning : board.getAllLines()) { // check se a linha esta ganhando
+			if (checkIfLineisWinning(lineWinning, board)) {
+				botSelectedPosition = chooseRandomPosition(lineWinning, board);
+				break;
+			}
+		}
+		return botSelectedPosition;
+	}
+
+	public boolean checkIfLineisWinning(int[] line, GameBoard board) {
+		boolean isLineWinning = false;
 		int numOfMarksBot = 0;
 		int numOfMarksPlayer = 0;
 		for (int j = 0; j < line.length; j++) {
@@ -124,9 +107,10 @@ public class GameBot {
 		if (numOfMarksBot == 2 && numOfMarksPlayer == 0) {
 			isLineWinning = true;
 		}
+		return isLineWinning;
 	}
 
-	public int chooseRandomIndex(int[] line, GameBoard board) {
+	public int chooseRandomPosition(int[] line, GameBoard board) {
 		int rnd = 0;
 		int index = 0;
 		boolean isEmpty = false;

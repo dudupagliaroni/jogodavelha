@@ -7,7 +7,6 @@ public class GameCore {
 
 	private static int numOfMoves = 1;
 	private boolean isGameOver = false;
-	private boolean gameHasWinner = false;
 	private boolean PVP = false;
 	private int currentPlayer = 1;
 	private int currentPlayerBoardMark = 1; // são 3 estados -1, 0 e 1 - como consertar isso?
@@ -169,7 +168,6 @@ public class GameCore {
 			if (numOfMarksPlayer2 == 3) {
 				System.out.println("Fim de Jogo! O jogador " + currentPlayer + " venceu! \n");
 				isGameOver = true;
-				gameHasWinner = true;
 				pointsPlayer2++;
 				break;
 			}
@@ -177,7 +175,6 @@ public class GameCore {
 			if (numOfMarksPlayer1 == 3) {
 				System.out.println("Fim de Jogo! O Jogador " + currentPlayer + " venceu! \n");
 				isGameOver = true;
-				gameHasWinner = true;
 				pointsPlayer1++;
 				break;
 			}
