@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class GameCore {
 
 	private static int numOfMoves = 1;
+	private boolean isRoundOver = false;
 	private boolean isGameOver = false;
 	private boolean PVP = false;
 	private int currentPlayer;
@@ -26,33 +27,47 @@ public class GameCore {
 		board.printBoard();
 		setGameMode();
 		gameLoop();
+		chooseNextMach();
 	}
 
 	public void gameLoop() {
-		while (!isGameOver) {
+		while (!checkGameWinner()) {
 			System.out.println("Jogada número " + (numOfMoves));
 
 			board.setBoardPosition(playersMove(setPlayer()), currentPlayerBoardMark);
 			board.printBoard();
-			isGameOver = checkGameWinner();
 
-			if (isGameOver) {
-				isGameOver = chooseNextMach();
+			if (checkRoundWinner() && !checkGameWinner()) {
+				nextRound();
 			}
+
 		}
+
+	}
+
+	public void nextRound() {
+
+		numOfMoves = 1;
+		board.resetBoard();
+		System.out.println("Novo round iniciado!");
+		isRoundOver = false;
+
 	}
 
 	public boolean chooseNextMach() {
-		System.out.println("O Placar esta:");
-		System.out.println("Jogador 1 | " + pointsPlayer1 + " x " + pointsPlayer2 + " | Jogador 2");
+
 		System.out.println("Deseja jogar novamente? 1-Sim/2-Não");
 		int option = scan.nextInt();
 
 		if (option == 1) {
 			isGameOver = false;
+			isRoundOver = false;
 			numOfMoves = 1;
+			pointsPlayer1 = 0;
+			pointsPlayer2 = 0;
 			board.resetBoard();
-			System.out.println("Novo jogo iniciado!");
+			startGame();
+
 		} else {
 			System.out.println("Fim de Jogo!");
 			System.exit(0);
@@ -117,20 +132,6 @@ public class GameCore {
 
 	}
 
-	public int randomPlayerStart() {
-		int[] players = { 1, 2 };
-		int rnd = new Random().nextInt(players.length);
-
-		if (players[rnd] == 1) {
-			currentPlayerBoardMark = 1;
-		} else {
-			currentPlayerBoardMark = -1;
-		}
-		System.out.println("O jogador " + players[rnd] + " começa!");
-		return players[rnd];
-
-	}
-
 	public int changeCurrentPlayer() {
 		if (currentPlayer == 1) {
 			currentPlayer = 2;
@@ -153,7 +154,21 @@ public class GameCore {
 		return currentPlayer;
 	}
 
-	public boolean checkGameWinner() {
+	public int randomPlayerStart() {
+		int[] players = { 1, 2 };
+		int rnd = new Random().nextInt(players.length);
+
+		if (players[rnd] == 1) {
+			currentPlayerBoardMark = 1;
+		} else {
+			currentPlayerBoardMark = -1;
+		}
+		System.out.println("O jogador " + players[rnd] + " começa!");
+		return players[rnd];
+
+	}
+
+	public boolean checkRoundWinner() {
 		boolean hasWinner = false;
 		for (int[] line : board.getAllLines()) {
 			int numOfMarksPlayer2 = 0;
@@ -168,16 +183,16 @@ public class GameCore {
 				}
 			}
 			if (numOfMarksPlayer2 == 3) {
-				System.out.println("Fim de Jogo! O jogador " + currentPlayer + " venceu! \n");
-				isGameOver = true;
+				System.out.println("Fim de Round! O jogador " + currentPlayer + " venceu! \n");
+				isRoundOver = true;
 				hasWinner = true;
 				pointsPlayer2++;
 				break;
 			}
 
 			if (numOfMarksPlayer1 == 3) {
-				System.out.println("Fim de Jogo! O Jogador " + currentPlayer + " venceu! \n");
-				isGameOver = true;
+				System.out.println("Fim de Round! O Jogador " + currentPlayer + " venceu! \n");
+				isRoundOver = true;
 				hasWinner = true;
 				pointsPlayer1++;
 				break;
@@ -186,12 +201,32 @@ public class GameCore {
 		}
 
 		if (numOfMoves == 10 && !hasWinner) {
+			isRoundOver = true;
+			System.out.println("Fim de round! Empate!!!");
+		}
+
+		if (isRoundOver) {
+			System.out.println("O Placar esta:");
+			System.out.println("Jogador 1 | " + pointsPlayer1 + " x " + pointsPlayer2 + " | Jogador 2");
+		}
+
+		return isRoundOver;
+
+	}
+
+	public boolean checkGameWinner() {
+		boolean isGameOver = false;
+		if (pointsPlayer1 >= 2) {
 			isGameOver = true;
-			System.out.println("Fim de jogo! Empate!!!");
+			System.out.println("Jogador 1 ganhou!");
+		}
+
+		if (pointsPlayer2 >= 2) {
+			isGameOver = true;
+			System.out.println("Jogador 2 ganhou!");
 		}
 
 		return isGameOver;
-
 	}
 
 	public static int getNumOfMoves() {
