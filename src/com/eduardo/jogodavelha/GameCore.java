@@ -145,7 +145,7 @@ public class GameCore {
 
 	}
 
-	private int setPlayer() {
+	public int setPlayer() {
 		if (numOfMoves == 1) {
 			currentPlayer = randomPlayerStart();
 		} else {
