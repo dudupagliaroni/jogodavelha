@@ -1,4 +1,4 @@
-package com.eduardo.jogodavelha;
+package com.eduardo.jogodavelha.model;
 
 public class Player {
 
