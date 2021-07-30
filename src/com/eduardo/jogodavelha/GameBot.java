@@ -68,8 +68,8 @@ public class GameBot {
 
 		if (!isLineSafe) {
 			int numOfMarks = 0;
-			for (int j = 0; j < line.length; j++) {
-				int index = line[j];
+			for (int i = 0; i < line.length; i++) {
+				int index = line[i];
 				if (board.getBoard()[index] == 1) {
 					numOfMarks++;
 				}
@@ -95,8 +95,8 @@ public class GameBot {
 		boolean isLineWinning = false;
 		int numOfMarksBot = 0;
 		int numOfMarksPlayer = 0;
-		for (int j = 0; j < line.length; j++) {
-			int index = line[j];
+		for (int i = 0; i < line.length; i++) {
+			int index = line[i];
 			if (board.getBoard()[index] == -1) {
 				numOfMarksBot++;
 			}
